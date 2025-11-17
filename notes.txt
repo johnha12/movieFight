@@ -1,0 +1,47 @@
+- app is a movie fight. search for 2 movies and compare with each other.
+  ex. box office, critic rating.
+- user may not remember full title, so may auto-complete inputs.
+
+- plan: 1. set up boilerplate 2. identify challenges 3.get started and write a lot of code
+
+- challenges:
+  1. fetch data of movies
+    - make network request to an API: omdbapi.com (free movie data api)
+    - search then look up info
+  2. build auto complete widget from scratch
+    - auto complete later
+  3. styling and css
+    - Bulma CSS
+
+- API
+  website with instructions: https://www.omdbapi.com/
+  key: 2d0ad63e
+  Send all data requests to: http://www.omdbapi.com/?apikey=[yourkey]&
+  Poster API requests: http://img.omdbapi.com/?apikey=[yourkey]&
+  - use axios for requests
+
+- Searching
+  - limited info when searching for auto-complete search.
+  - more infor when searched specifically.
+  - by search vs by id
+
+- Autocomplete widget
+  - good practice to go over design/steps. gives understanding of what is required.
+  - user types and stops, widget will render possible movies user typed.
+  - show poster and titles.
+  - can close menu if nothing found.
+  - user click enter => do nothing
+    have user click on movie => update text and close menu
+    user click outside menu => close menu
+    later learn about scenerios
+  - search for every keypress is not ideal
+    should wait half a sec of user stop typing before making requests
+
+  - want to wait for no further inputs then search.
+    less taxing on the api.
+    setTimeout() returns int value as identifier.
+    debouncing an input.
+
+  - debounce helper.
+    onInput() => debounceHelper() => wrapper on onInput()
+    wrapper will only allow last call that waited 1/2 sec.
