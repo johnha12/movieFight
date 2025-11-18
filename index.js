@@ -6,31 +6,63 @@ const fetchData = async (searchTerm)  => {    // axios puts everything together
       s: searchTerm
     }
   });
-  console.log(response.data);
+
+  if (response.data.Error) {    // case where no movies found
+    return [];
+  }
+  // console.log(response.data);
+  return response.data.Search;    // array of movies
 };
 
-// fetchData();
+// is-active is for styling using bulma. will use later
+// results in <div class="dropdown-content results">, just for styling
+// dropdown content will show all results we'll get
+const root = document.querySelector(".autocomplete")
+root.innerHTML = `
+  <label><b>Search for a movie</b></label>
+  <input class="input" />
+  <div class="dropdown">
+    <div class="dropdown-menu">
+      <div class="dropdown-content results"></div>
+    </div>
+  </div>
+`;
+
 
 const input = document.querySelector("input");
+const dropdown = document.querySelector(".dropdown");
+const resultsWrapper = document.querySelector(".results")
 
 
-// function to wrap any function to have a delay
-const debounce = (func, delay=1000) => {    // note func may have args passed
-  let timeOutId;
-  return (...args) => {         // ...args takes in any num of args passed in
-    if (timeOutId) {            // first run nothing happends
-      clearTimeout(timeOutId);  // stops prev fetch for next fetch
-    }
-    timeOutId = setTimeout(() => {  // once full wait, newest fetch executes
-      func.apply(null, args);   // apply calls function and takes all args and pass them in original funciton
-    }, delay);
-  };
-};
+const onInput = async event => {    // mark async because await is inside
+  const movies = await fetchData(event.target.value); // need await because fetchData is an async function
+  // console.log(movies);
+  if (!movies.length) {
+    dropdown.classList.remove("is-active");
+    return
+  }
 
-// following is a very good way to make a fetch and cancel the prev fetch
-
-const onInput = event => {
-  fetchData(event.target.value);
+  resultsWrapper.innerHTML = "";// clear out prev input
+  dropdown.classList.add("is-active");
+  for (let movie of movies) {   // edge case where no moive response found
+    const option = document.createElement("a");
+    const imgSrc = movie.Poster ==="N/A" ? "" : movie.Poster;
+    // note backtick for multi-line code
+    //onerror="this.src=''" for broken links
+    option.classList.add("dropdown-item");
+    option.innerHTML= `
+    <img src="${imgSrc}" onerror="this.src=''"/>
+    ${movie.Title}
+    `
+    resultsWrapper.appendChild(option);
+  }
 };
 
 input.addEventListener("input", debounce(onInput, 500));
+
+// if user clicks outside root/menu, then close menu
+document.addEventListener("click", event => {
+  if (!root.contains(event.target)) {
+    dropdown.classList.remove("is-active");
+  }
+});

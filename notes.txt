@@ -45,3 +45,45 @@
   - debounce helper.
     onInput() => debounceHelper() => wrapper on onInput()
     wrapper will only allow last call that waited 1/2 sec.
+
+  - awaiting async functions.
+    render usable data in autocomplete widget.
+    then select movie by clicking on it.
+    return Search property.
+    fetchData() is async, so need to await until response gets back
+
+  - Rendering movies
+    creat div for each movie found.
+  
+  - handle error
+    case where no movie is found.
+    we also want search to work on incomplete words
+
+  - Next make it look like a menu with style
+    smaller poster, next to title.
+    use bulma.io to turn into menu dropdown.
+    https://bulma.io/documentation/components/dropdown/
+    instead of anchor, movie poster/title stick in a tag.
+
+  - Styling the widget
+    option 1: write out html
+    option 2: code to autocomplete, create input, handle input
+    basically have js do it all. bare root in html.
+    option 2 very good, and for collaboration. all html changes are in js.
+    create div in hmtl, then create autocomplete in js!
+    that is very good!
+
+  - HTML generation with js
+    trying to use reusable code in js that generates needed html.
+
+  - Note
+    I might see an error saying picture is N/A but will fix soon after.
+
+  - Now need to fix onInput to take in generated values
+    I think if i add more stuff to class=..., there can be multiple classes
+    is-active class to open up menu
+    next want to click out of menu. note that next search gets appended. need to replace instead.
+
+  - Close menu when user clicks out
+    remove is-active when user clicks out, if root doesnt contain the thing user clicks
+    remove menu on empty search, and return early.
