@@ -14,55 +14,61 @@ const fetchData = async (searchTerm)  => {    // axios puts everything together
   return response.data.Search;    // array of movies
 };
 
-// is-active is for styling using bulma. will use later
-// results in <div class="dropdown-content results">, just for styling
-// dropdown content will show all results we'll get
-const root = document.querySelector(".autocomplete")
-root.innerHTML = `
-  <label><b>Search for a movie</b></label>
-  <input class="input" />
-  <div class="dropdown">
-    <div class="dropdown-menu">
-      <div class="dropdown-content results"></div>
-    </div>
-  </div>
-`;
+createAutoComplete({
+  root: document.querySelector(".autocomplete")
+});
+createAutoComplete({
+  root: document.querySelector(".autocomplete-two")
+});
+createAutoComplete({
+  root: document.querySelector(".autocomplete-three")
+});
 
-
-const input = document.querySelector("input");
-const dropdown = document.querySelector(".dropdown");
-const resultsWrapper = document.querySelector(".results")
-
-
-const onInput = async event => {    // mark async because await is inside
-  const movies = await fetchData(event.target.value); // need await because fetchData is an async function
-  // console.log(movies);
-  if (!movies.length) {
-    dropdown.classList.remove("is-active");
-    return
-  }
-
-  resultsWrapper.innerHTML = "";// clear out prev input
-  dropdown.classList.add("is-active");
-  for (let movie of movies) {   // edge case where no moive response found
-    const option = document.createElement("a");
-    const imgSrc = movie.Poster ==="N/A" ? "" : movie.Poster;
-    // note backtick for multi-line code
-    //onerror="this.src=''" for broken links
-    option.classList.add("dropdown-item");
-    option.innerHTML= `
-    <img src="${imgSrc}" onerror="this.src=''"/>
-    ${movie.Title}
-    `
-    resultsWrapper.appendChild(option);
-  }
+const onMovieSelect = async (movie) => {
+  const response = await axios.get("http://www.omdbapi.com/", {
+    params: {
+      apikey: "2d0ad63e",
+      i: movie.imdbID
+    }
+  });
+  document.querySelector("#summary").innerHTML = movieTemplate(response.data);
 };
 
-input.addEventListener("input", debounce(onInput, 500));
-
-// if user clicks outside root/menu, then close menu
-document.addEventListener("click", event => {
-  if (!root.contains(event.target)) {
-    dropdown.classList.remove("is-active");
-  }
-});
+const movieTemplate = (movieDetail) => {
+  return `
+  <article class="media">
+    <figure class="media-left">
+      <p class="image">
+        <img src="${movieDetail.Poster}" />
+      </p>
+    </figure>
+    <div class="media-content">
+      <div class="content">
+        <h1>${movieDetail.Title}</h1>
+        <h4>${movieDetail.Genre}</h4>
+        <p>${movieDetail.Plot}</p>
+      </div>
+    </div>
+  </article>
+  <article class="notification is-primary">
+    <p class="title">${movieDetail.Awards}</p>
+    <p class="subtitle">Awards</p>
+  </article>
+  <article class="notification is-primary">
+    <p class="title">${movieDetail.BoxOffice}</p>
+    <p class="subtitle">Box Office</p>
+  </article>
+  <article class="notification is-primary">
+    <p class="title">${movieDetail.Metascore}</p>
+    <p class="subtitle">Metascore</p>
+  </article>
+  <article class="notification is-primary">
+    <p class="title">${movieDetail.imdbRating}</p>
+    <p class="subtitle">IMDB Rating</p>
+  </article>
+  <article class="notification is-primary">
+    <p class="title">${movieDetail.imdbVotes}</p>
+    <p class="subtitle">IMDB Votes</p>
+  </article>
+  `
+};

@@ -78,6 +78,7 @@
 
   - Note
     I might see an error saying picture is N/A but will fix soon after.
+    !!!need to handle broken links!!!
 
   - Now need to fix onInput to take in generated values
     I think if i add more stuff to class=..., there can be multiple classes
@@ -87,3 +88,26 @@
   - Close menu when user clicks out
     remove is-active when user clicks out, if root doesnt contain the thing user clicks
     remove menu on empty search, and return early.
+
+  - Handling movie selection
+    follow up request => on click, send another request, this time pass in params i of selected movie.
+
+  - Rendered movie stats
+    next render second movie and then highlight higher stat of them.
+
+  - Issues with codebase
+    now want to refactor for reusable code.
+    - code touches everything
+    - not reusing autocomplete widget code.
+    - currently hard to reuse, but have reusable code.
+    - global variable makes it hard to reuse inside current program.
+
+  - Plan
+    - start with specific code in index.js, and reusable code in autocomplete.js
+    - js file will take configuration object.
+    - index.js => fetchData(), render option, onOptionSelect(), root element
+    - autocomplete.js => take autocomplete config and render on screen
+    - non-reusable in index.js, resusable in autocomplete.js
+
+  - Displaying multiple autocomplete
+    - first aim for multiple root autocomplete on a page at the same time.
