@@ -1,40 +1,114 @@
-const fetchData = async (searchTerm)  => {    // axios puts everything together
-  const response = await axios.get("http://www.omdbapi.com/", {   // response take time
-    params: {
-      apikey: "2d0ad63e",
-      // s: "avengers"
-      s: searchTerm
+const autoCompleteConfig = {
+  renderOption(movie){
+    const imgSrc = movie.Poster ==="N/A" ? "" : movie.Poster;
+    return `
+    <img src="${imgSrc}" onerror="this.src=''"/>
+    ${movie.Title} (${movie.Year})
+    `;
+  },
+  inputValue(movie) {
+    return movie.Title;
+  },
+
+  async fetchData(searchTerm) {    // axios puts everything together
+    const response = await axios.get("http://www.omdbapi.com/", {   // response take time
+      params: {
+        apikey: "2d0ad63e",
+        // s: "avengers"
+        s: searchTerm
+      }
+    });
+  
+    if (response.data.Error) {    // case where no movies found
+      return [];
     }
-  });
-
-  if (response.data.Error) {    // case where no movies found
-    return [];
+    // console.log(response.data);
+    return response.data.Search;    // array of movies
   }
-  // console.log(response.data);
-  return response.data.Search;    // array of movies
-};
+}
 
 createAutoComplete({
-  root: document.querySelector(".autocomplete")
+  ...autoCompleteConfig,
+  root: document.querySelector("#left-autocomplete"),
+  onOptionSelect(movie) {
+    document.querySelector(".tutorial").classList.add("is-hidden");
+    onMovieSelect(movie, document.querySelector("#left-summary"), "left");
+  }
+  
 });
 createAutoComplete({
-  root: document.querySelector(".autocomplete-two")
-});
-createAutoComplete({
-  root: document.querySelector(".autocomplete-three")
+  ...autoCompleteConfig,
+  root: document.querySelector("#right-autocomplete"),
+  onOptionSelect(movie) {
+    document.querySelector(".tutorial").classList.add("is-hidden");
+    onMovieSelect(movie, document.querySelector("#right-summary"), "right");
+  }
+  
 });
 
-const onMovieSelect = async (movie) => {
+let leftMovie;
+let rightMovie;
+const onMovieSelect = async (movie, summaryElement, side) => {
   const response = await axios.get("http://www.omdbapi.com/", {
     params: {
       apikey: "2d0ad63e",
       i: movie.imdbID
     }
   });
-  document.querySelector("#summary").innerHTML = movieTemplate(response.data);
+  summaryElement.innerHTML = movieTemplate(response.data);
+
+  if (side === "left") {
+    leftMovie = response.data;
+  }
+  else {
+    rightMovie = response.data;
+  }
+  if (leftMovie && rightMovie) {
+    runComparison()
+  }
+};
+
+const runComparison = () => {
+  // start looking at the sections to compare
+  const leftSideStats = document.querySelectorAll("#left-summary .notification")
+  const rightSideStats  = document.querySelectorAll("#right-summary .notification")
+  leftSideStats.forEach((leftStat, index) => {
+    const rightStat = rightSideStats[index];
+
+    leftSideValue = parseInt(leftStat.dataset.value);
+    rightSideValue = parseInt(rightStat.dataset.value);
+
+    if (rightSideValue > leftSideValue) {
+      leftStat.classList.remove("is-primary");
+      leftStat.classList.add("is-warning");
+    }
+    else {
+      rightStat.classList.remove("is-primary");
+      rightStat.classList.add("is-warning");
+    }
+  });
 };
 
 const movieTemplate = (movieDetail) => {
+  // convert string to int
+  const dollars = parseInt(
+    movieDetail.BoxOffice.replace(/\$/g, "").replace(/,/g, "")
+  );
+  const metaScore = parseInt(movieDetail.Metascore);
+  const imdbRating = parseFloat(movieDetail.imdbRating);
+  const imdbVotes = parseInt(movieDetail.imdbVotes.replace(/,/g, ""));
+  // array of words and nums, iterate over array
+  const awards = movieDetail.Awards.split(" ").reduce((prev, word) => {
+    const value = parseInt(word);   // either NaN or int back
+    if (isNaN(value)) {
+      return prev;
+    }
+    else {
+      return prev + value;
+    }
+  }, 0);
+  console.log(awards)
+  
   return `
   <article class="media">
     <figure class="media-left">
@@ -50,23 +124,23 @@ const movieTemplate = (movieDetail) => {
       </div>
     </div>
   </article>
-  <article class="notification is-primary">
+  <article data-value=${awards} class="notification is-primary">
     <p class="title">${movieDetail.Awards}</p>
     <p class="subtitle">Awards</p>
   </article>
-  <article class="notification is-primary">
+  <article data-value=${dollars} class="notification is-primary">
     <p class="title">${movieDetail.BoxOffice}</p>
     <p class="subtitle">Box Office</p>
   </article>
-  <article class="notification is-primary">
+  <article data-value=${metaScore} class="notification is-primary">
     <p class="title">${movieDetail.Metascore}</p>
     <p class="subtitle">Metascore</p>
   </article>
-  <article class="notification is-primary">
+  <article data-value=${imdbRating} class="notification is-primary">
     <p class="title">${movieDetail.imdbRating}</p>
     <p class="subtitle">IMDB Rating</p>
   </article>
-  <article class="notification is-primary">
+  <article data-value=${imdbVotes} class="notification is-primary">
     <p class="title">${movieDetail.imdbVotes}</p>
     <p class="subtitle">IMDB Votes</p>
   </article>

@@ -111,3 +111,31 @@
 
   - Displaying multiple autocomplete
     - first aim for multiple root autocomplete on a page at the same time.
+
+  - Extracting rendering logic
+    - next function is render option. return string html show inside dropdown.
+    - make data customizable
+    - refactor so it doesn't say movie.
+
+  - onOptionSelect
+    - now work on fetchData
+    - don't make big assumptions of what data were working with.
+      so no movies word
+
+  - Different data
+    - can use renderOption in index.js to get data from different api
+      just change the code params and fetchData
+
+  - Displaying 2 section of searching, and starting tutorial.
+    start by contain in index.html.
+    - is-hidden class will hide with bulma style
+  
+  - Compare
+    - select element on both sides of screen
+    - parse string
+    - code can break if we re-order statistics
+    - we can add a num property to every statistic, then eval using num property.
+    - data-value=someNum
+
+  - Questions
+    data-value=, and dataset.value
