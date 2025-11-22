@@ -139,3 +139,8 @@
 
   - Questions
     data-value=, and dataset.value
+
+  - Key points
+    - widget to automate html.
+    - run comparison by extracting in relevant values, stored in DOM. 
+      then compare right away. basically processing upfront.
