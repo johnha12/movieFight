@@ -11,7 +11,7 @@ const autoCompleteConfig = {
   },
 
   async fetchData(searchTerm) {    // axios puts everything together
-    const response = await axios.get("http://www.omdbapi.com/", {   // response take time
+    const response = await axios.get("https://www.omdbapi.com/", {   // response take time
       params: {
         apikey: "2d0ad63e",
         // s: "avengers"
